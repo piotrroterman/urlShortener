@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>LinkShortener</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+</head>
+<body class="text-light" th:style="'background-image: url(' + @{/images/scissors.jpg} + ');  background-size: cover;'">
+<div class="container">
+    <h1>Link Shortening System</h1>
+    <hr>
+    <h2>Save Link</h2>
+    <form id="saveForm" method="POST" th:action="@{/saveLink}">
+        <input type="text" name="originalLink" class="form-control mb-4 col-4">
+        <button type="submit" class="btn btn-outline-secondary">Save</button>
+    </form>
+    <span id="shortenedLinkResult"></span>
+    <script>
+        document.getElementById('saveForm')
+            .addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const originalLink = document.querySelector('input[name="originalLink"]').value;
+                const res = await fetch('/saveLink', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ originalLink })
+                });
+
+                if (res.ok) {
+                    const link = await res.json();
+                    document.getElementById('shortenedLinkResult')
+                        .textContent = 'Shortened: http://localhost:8080/' + link.shortenedLink;
+
+                } else {
+                    alert('Failed to save: ' + res.status);
+                }
+            });
+    </script>
+    <hr>
+
+</div>
+<!--<div class="container my-2" align="center">-->
+
+<!--    <h3>Links List</h3>-->
+<!--    <table style="width:80%"-->
+<!--           class = "table table-striped table-responsive-md">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>originalLink</th>-->
+<!--            <th>shortenedLink</th>-->
+<!--            <th>createdAt</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr th:each="link:${allLinksList}">-->
+<!--            <td th:text="${link.originalLink}"></td>-->
+<!--            <td th:text="${link.shortenedLink}"></td>-->
+<!--            <td th:text="${link.createdAt}"></td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
+</body>
+</html>
